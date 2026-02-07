@@ -14,23 +14,33 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
+    ///admonition | Usage
+    - Define a width for the source image, and a width for the browser display.
+    - Click on the image to see relative and absolute pixel values.
+    ///
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
     # Use HTML canvas to get image coordinates
     """)
     return
 
 
 @app.cell(hide_code=True)
-def _(mo, srcw):
-    mo.md(f"""
-    Set width of image to import: {srcw}
-    """)
+def _(mo, srcw, w):
+    mo.md(f"*Width of image to import* {srcw} *Width of display*: {w}")
+
     return
 
 
 @app.cell(hide_code=True)
 def _(canvas, mo):
     click = canvas.click
-    msg = "Click on the image to get coordinates."
+    msg = ""
 
     if isinstance(click, dict) and "x" in click and "y" in click:
         disp_w = click.get("displayWidth")
@@ -44,14 +54,16 @@ def _(canvas, mo):
             y_px = int(round(y_disp * nat_h / disp_h))
             x_norm = min(max(x_px / nat_w, 0.0), 1.0)
             y_norm = min(max(y_px / nat_h, 0.0), 1.0)
-        
+
             msg = (
                 """
-    **Coordinates**  
+    **Source image**            
+    Width, height: {nat_w}x{nat_h}            
+    **Coordinates of clicked point**  
     Displayed pixels: x={x_disp}, y={y_disp}  
     Original pixels: x={x_px}, y={y_px}  
     Normalized: x={x_norm:.4f}, y={y_norm:.4f}  
-    Image size: {nat_w}x{nat_h}
+
 
 
     """.format(
@@ -63,26 +75,12 @@ def _(canvas, mo):
                     y_norm=y_norm,
                     nat_w=nat_w,
                     nat_h=nat_h,
-              
+
                 )
             )
 
     mo.md(msg)
     return (click,)
-
-
-@app.cell
-def _(click):
-    click.keys()
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo, w):
-    mo.md(f"""
-    Set width of display: {w}
-    """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -105,6 +103,14 @@ def _(mo):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    **UI**
+    """)
+    return
+
+
 @app.cell
 def _(mo):
     srcw = mo.ui.slider(start=600, stop=4000, step=100, show_value=True, value=1000)
@@ -112,19 +118,29 @@ def _(mo):
 
 
 @app.cell
-def _(srcw):
-    url = f"https://www.homermultitext.org/iipsrv?OBJ=IIP,1.0&FIF=/project/homer/pyramidal/deepzoom/citebne/complutensian/v1/v1p19.tif&RGN=0.007111,0.0006196,0.9880,0.9991&WID={srcw.value}&CVT=JPEG"
-    return (url,)
+def _(mo):
+    w = mo.ui.slider(start=100, stop=900, step=25, show_value=True, value=500)
+    return (w,)
 
 
 @app.cell
-def _():
-    import anywidget
-    import base64
-    import requests
-    import traitlets
+def _(CanvasClick, data_url, mo, w):
+    canvas = mo.ui.anywidget(CanvasClick(src=data_url, width=w.value))
+    return (canvas,)
 
-    return anywidget, base64, requests, traitlets
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    **Image** (with source width defined by user interaction)
+    """)
+    return
+
+
+@app.cell
+def _(srcw):
+    url = f"https://www.homermultitext.org/iipsrv?OBJ=IIP,1.0&FIF=/project/homer/pyramidal/deepzoom/citebne/complutensian/v1/v1p19.tif&RGN=0.007111,0.0006196,0.9880,0.9991&WID={srcw.value}&CVT=JPEG"
+    return (url,)
 
 
 @app.cell
@@ -136,10 +152,12 @@ def _(base64, requests, url):
     return (data_url,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
-    w = mo.ui.slider(start=100, stop=900, step=25, show_value=True, value=500)
-    return (w,)
+    mo.md("""
+    **Canvas widget**
+    """)
+    return
 
 
 @app.cell
@@ -224,9 +242,27 @@ def _(anywidget, traitlets):
 
 
 @app.cell
-def _(CanvasClick, data_url, mo, w):
-    canvas = mo.ui.anywidget(CanvasClick(src=data_url, width=w.value))
-    return (canvas,)
+def _(click):
+    click.keys()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    **Imports**
+    """)
+    return
+
+
+@app.cell
+def _():
+    import anywidget
+    import base64
+    import requests
+    import traitlets
+
+    return anywidget, base64, requests, traitlets
 
 
 if __name__ == "__main__":
