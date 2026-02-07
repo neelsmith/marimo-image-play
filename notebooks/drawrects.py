@@ -22,6 +22,25 @@ def _(mo):
     return
 
 
+@app.cell
+def _():
+    urnstrs = ["urn:cite2:hmt:vaimg.2017a:VA012RN_0013@0.2022,0.2097,0.1743,0.02638",
+    "urn:cite2:hmt:vaimg.2017a:VA012RN_0013@0.1535,0.1013,0.3965,0.02466"]
+    return (urnstrs,)
+
+
+@app.cell
+def _(Cite2Urn, urnstrs):
+    urns = [Cite2Urn.from_string(u) for u in urnstrs]
+    return (urns,)
+
+
+@app.cell
+def _(urns):
+    baseimg = urns[0].drop_subreference
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
@@ -419,6 +438,14 @@ def _(mo):
     **Imports**
     """)
     return
+
+
+@app.cell
+def _():
+    from urn_citation import Cite2Urn
+    import citable_image as ci
+
+    return (Cite2Urn,)
 
 
 @app.cell
