@@ -37,7 +37,19 @@ def _(Cite2Urn, urnstrs):
 
 @app.cell
 def _(urns):
-    baseimg = urns[0].drop_subreference
+    baseimg = urns[0].drop_subreference()
+    return (baseimg,)
+
+
+@app.cell
+def _(baseimg, ci, service):
+    iiifrequest = ci.iiif_url(baseimg, service)
+    return (iiifrequest,)
+
+
+@app.cell
+def _(iiifrequest):
+    iiifrequest
     return
 
 
@@ -230,7 +242,10 @@ def ptinrect(x,y,l,t,w,h):
 
 @app.cell
 def _(click, rects):
-    ptinrect(click['xNorm'], click['yNorm'], rects[0][0], rects[0][1], rects[0][2], rects[0][3])
+    inbox = None
+    if click:
+        inbox = ptinrect(click['xNorm'], click['yNorm'], rects[0][0], rects[0][1], rects[0][2], rects[0][3])
+    inbox    
     return
 
 
@@ -291,8 +306,8 @@ def _(mo):
 
 
 @app.cell
-def _(srcw):
-    url = f"https://www.homermultitext.org/iipsrv?OBJ=IIP,1.0&FIF=/project/homer/pyramidal/deepzoom/citebne/complutensian/v1/v1p19.tif&RGN=0.007111,0.0006196,0.9880,0.9991&WID={srcw.value}&CVT=JPEG"
+def _(iiifrequest):
+    url = iiifrequest # f"https://www.homermultitext.org/iipsrv?OBJ=IIP,1.0&FIF=/project/homer/pyramidal/deepzoom/citebne/complutensian/v1/v1p19.tif&RGN=0.007111,0.0006196,0.9880,0.9991&WID={srcw.value}&CVT=JPEG"
     return (url,)
 
 
@@ -303,6 +318,22 @@ def _(base64, requests, url):
     encoded = base64.b64encode(response.content).decode("ascii")
     data_url = f"data:image/jpeg;base64,{encoded}"
     return (data_url,)
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    **Service**
+    """)
+    return
+
+
+@app.cell
+def _(ci):
+    baseurl = "http://www.homermultitext.org/iipsrv"
+    root = "/project/homer/pyramidal/deepzoom"
+    service = ci.IIIFService(baseurl=baseurl, pathroot=root)
+    return (service,)
 
 
 @app.cell(hide_code=True)
@@ -445,7 +476,7 @@ def _():
     from urn_citation import Cite2Urn
     import citable_image as ci
 
-    return (Cite2Urn,)
+    return Cite2Urn, ci
 
 
 @app.cell
