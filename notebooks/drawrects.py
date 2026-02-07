@@ -225,27 +225,27 @@ def _(anywidget, traitlets):
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            const rects = model.get("rects") || [];
-            const colors = model.get("colors") || [
-              "#fbbf24",
-              "#f97316",
-              "#22c55e",
-              "#3b82f6",
-              "#a855f7",
-              "#ef4444",
-            ];
-            if (Array.isArray(rects) && rects.length > 0) {
-              ctx.lineWidth = 2;
-              rects.forEach((rect, idx) => {
-                if (!Array.isArray(rect) || rect.length < 4) return;
-                ctx.strokeStyle = colors[idx % colors.length];
-                const x = rect[0] * canvas.width;
-                const y = rect[1] * canvas.height;
-                const w = rect[2] * canvas.width;
-                const h = rect[3] * canvas.height;
-                ctx.strokeRect(x, y, w, h);
-              });
-            }
+                        const rects = model.get("rects") || [];
+                        const colors = model.get("colors") || [
+                            "#fbbf24",
+                            "#f97316",
+                            "#22c55e",
+                            "#3b82f6",
+                            "#a855f7",
+                            "#ef4444",
+                        ];
+                        if (Array.isArray(rects) && rects.length > 0) {
+                            ctx.lineWidth = 2;
+                            rects.forEach((rect, idx) => {
+                                if (!Array.isArray(rect) || rect.length < 4) return;
+                                ctx.strokeStyle = colors[idx % colors.length];
+                                const x = rect[0] * canvas.width;
+                                const y = rect[1] * canvas.height;
+                                const w = rect[2] * canvas.width;
+                                const h = rect[3] * canvas.height;
+                                ctx.strokeRect(x, y, w, h);
+                            });
+                        }
           };
 
           const setSrc = () => {
