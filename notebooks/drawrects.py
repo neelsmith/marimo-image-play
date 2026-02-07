@@ -41,8 +41,8 @@ def _(mo, srcw, w):
 @app.cell
 def _():
     rects_input = ["0.1,0.2,0.5,0.4", "0.2,0.5,0.2,0.1"]
-    rects_default = [tuple(float(v) for v in rect.split(",")) for rect in rects_input]
-    return (rects_default,)
+    rects = [tuple(float(v) for v in rect.split(",")) for rect in rects_input]
+    return (rects,)
 
 
 @app.cell
@@ -59,9 +59,9 @@ def _():
 
 
 @app.cell
-def _(mo, palette, rects_default):
+def _(mo, palette, rects):
     labels = []
-    for idx, rect in enumerate(rects_default):
+    for idx, rect in enumerate(rects):
         color = palette[idx % len(palette)]
         label = (
             f"{idx + 1} ({color}) x={rect[0]:.2f} y={rect[1]:.2f} "
@@ -71,6 +71,52 @@ def _(mo, palette, rects_default):
 
     mo.md("**Rectangles**")
     mo.md("\n".join(f"- {label}" for label in labels))
+    return
+
+
+@app.cell
+def _(palette):
+    cdivs =[ f"<li><span style='width:20px; height:20px; background-color:{clr};'/> color {i}</li>" for i, clr in enumerate(palette)]
+    return (cdivs,)
+
+
+@app.cell
+def _(cdivs):
+    cdivs
+    return
+
+
+@app.cell
+def _(cdivs):
+    items = "<ol>" + "".join(cdivs)  + "</ol>"
+    return (items,)
+
+
+@app.cell
+def _(items):
+    items
+    return
+
+
+@app.cell
+def _(items, mo):
+    mo.Html(items)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo, palette):
+    mo.Html(
+        f"<div style='width:10px; height:10px; background-color:{palette[1]};'/><br/><div style='width:10px; height:10px; background-color:{palette[0]};'/>"
+    )
+    return
+
+
+@app.cell
+def _(mo, palette):
+    mo.Html(
+        f"<div style='width:10px; height:10px; background-color:{palette[1]};'/><div>"
+    )
     return
 
 
@@ -121,6 +167,54 @@ def _(canvas, mo):
     return (click,)
 
 
+@app.cell
+def _(rects):
+    rects[0]
+    return
+
+
+@app.cell
+def _(click):
+    click.keys()
+    return
+
+
+@app.cell
+def _(rects):
+    r = rects[0]
+    l = r[0]
+    t = r[1]
+    wid = r[2]
+    h = r[3]
+    return h, l, t, wid
+
+
+@app.cell
+def _(h, t):
+    t + h
+    return
+
+
+@app.cell
+def _(l, wid):
+    l + wid
+    return
+
+
+@app.function
+def ptinrect(x,y,l,t,w,h):
+    if x > l and x < (l + w) and y > t and y < (t + h):
+        return True
+    else:
+        return False
+
+
+@app.cell
+def _(click, rects):
+    ptinrect(click['xNorm'], click['yNorm'], rects[0][0], rects[0][1], rects[0][2], rects[0][3])
+    return
+
+
 @app.cell(hide_code=True)
 def _(canvas):
     canvas
@@ -162,9 +256,9 @@ def _(mo):
 
 
 @app.cell
-def _(CanvasClick, data_url, mo, palette, rects_default, w):
+def _(CanvasClick, data_url, mo, palette, rects, w):
     canvas = mo.ui.anywidget(
-        CanvasClick(src=data_url, width=w.value, rects=rects_default, colors=palette)
+        CanvasClick(src=data_url, width=w.value, rects=rects, colors=palette)
     )
     return (canvas,)
 
